@@ -10,3 +10,4 @@ beta/
 .vscode/
 __pycache__/
 item.md
+*.code-workspace
