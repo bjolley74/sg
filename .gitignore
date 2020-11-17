@@ -1,0 +1,12 @@
+*.csv
+*.log
+*.pdf
+*.html
+*.ods
+*.txt
+old_install/
+gamma/
+beta/
+.vscode/
+__pycache__/
+item.md
