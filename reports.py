@@ -40,18 +40,6 @@ def html_report(b,c,*args,**kwargs):
 	
 	#get list of family names from dictionary 
 	a=b.keys()
-	#get colors from kwargs
-	if "text" in kwargs.keys():
-		text_color = kwargs["text"]
-	else:
-		text_color = "000000"
-	if "bgcolor" in kwargs.keys():
-		bgcolor = kwargs["bgcolor"]
-	else:
-		bgcolor = "FFFFFF"
-	if "tables" in kwargs.keys():
-		t = kwargs['tables']
-	
 	logger.info("additional args given: {}".format(args))
 	logger.info("kwargs = {}".format(kwargs))
 	
@@ -64,19 +52,19 @@ def html_report(b,c,*args,**kwargs):
 	file.write("<title>")
 	file.write("Full Small Group Babysitting Report")
 	file.write("</title>\n")
-	file.write("<style>table, th, td {  border: 1px solid black;  border-collapse: collapse;}</style>")
+	file.write("<link href='main.css' type='text/css' rel='stylesheet'/>")
 	file.write("</head>\n")
 	
 	#HTML body
-	file.write("<body bgcolor={} text = {}>\n".format(bgcolor,text_color))
+	file.write("<body>")
 	
 	#Heading
-	file.write("<center><h1>Small Group Babysitting Report</h1></center>\n")
+	file.write("<h1>Small Group Babysitting Report</h1>\n")
 	
 	#Section A - Family Balances 
 	file.write("<br><br>\n<h3>Family Balances</h3>\n")
 	for key in a:
-		file.write("<div>{} balance is ${:.2f}</div>\n".format(key,b[key]))
+		file.write("<div class='family-balance'>{} balance is ${:.2f}</div>\n".format(key,b[key]))
 	file.write("<hr><br>\n")
 	
 	#Section B - Cash On Hand
@@ -84,31 +72,33 @@ def html_report(b,c,*args,**kwargs):
 	num_args=len(args)
 	
 		#Section C - Tables
-	file.write("<hr></hr>\n")
-	file.write("<br>\n<h3>Family Tables</h3>\n<br>")
-	for f,tbl in t.items():
-		file.write("<h4>{} Family Table</h4>".format(f))
-		headers = tbl.pop(0)
-		headers.append('Balance')
-		file.write("<table>")
-		money_in = [float(x[1]) for x in tbl]
-		money_out = [float(x[2]) for x in tbl]
-		z = zip(money_in,money_out)
-		weekly = [x-y for (x,y) in z]
-		loop = 0
-		file.write('</tr>')
-		for col in headers:
-			file.write("<th><center>{}</th></center>".format(col))
-		file.write("<tr>")
-		for row in tbl:
-			logger.debug("row: {}".format(row))
+	if "tables" in kwargs.keys():
+		t = kwargs['tables']
+		file.write("<hr>\n")
+		file.write("<br>\n<h3>Family Tables</h3>\n<br>")
+		for f,tbl in t.items():
+			file.write("<h4>{} Family Table</h4>".format(f))
+			headers = tbl.pop(0)
+			headers.append('Balance')
+			file.write("<table>")
+			money_in = [float(x[1]) for x in tbl]
+			money_out = [float(x[2]) for x in tbl]
+			z = zip(money_in,money_out)
+			weekly = [x-y for (x,y) in z]
+			loop = 0
+			file.write('</tr>')
+			for col in headers:
+				file.write("<th>{}</th>".format(col))
 			file.write("<tr>")
-			row.append(weekly[loop])
-			loop+=1
-			for item in row:
-				logger.debug("item: ".format(item))
-				file.write("<td>{}</td>".format(item))
-			logger.debug('loop now = {}'.format(loop))
+			for row in tbl:
+				logger.debug("row: {}".format(row))
+				file.write("<tr>")
+				row.append(weekly[loop])
+				loop+=1
+				for item in row:
+					logger.debug("item: {}".format(item))
+					file.write("<td>{}</td>".format(item))
+				logger.debug('loop now = {}'.format(loop))
 			file.write("</tr>")
 		file.write("</table>")
 	
@@ -125,10 +115,10 @@ def html_report(b,c,*args,**kwargs):
 	for line in bs_data:
 		file.write("<tr>")
 		e,f,g,h = line[0],line[1],line[2], int(line[1]) * float(line[2])
-		file.write("<center><td>{:15}</center></td>".format(e))
-		file.write('<center><td>{:10}</center></td>'.format(f))
-		file.write('<center><td>{:15}</center></td>'.format(g))
-		file.write("<center><td>{:10}</center></td>\n".format(h))
+		file.write("<td>{:15}</td>".format(e))
+		file.write('<td>{:10}</td>'.format(f))
+		file.write('<td>{:15}</td>'.format(g))
+		file.write("<td>{:10}</td>\n".format(h))
 		file.write("</tr>\n")
 	file.write("</table>")
 	#file.write("<a href='bs_data.html'>Babysitter Data</a>\n<br>\n")
@@ -140,11 +130,13 @@ def html_report(b,c,*args,**kwargs):
 			file.write("<div>{}</div>\n".format(arg))
 			
 	#footer 
+	file.write("<div class='footer'>")
 	file.write("<hr>\n")
 	file.write("")
 	date = datetime.datetime.now()
-	file.write("<center><h4>{}</h4></center>\n".format(date))
-	
+	file.write("<h4>{}</h4>\n".format(date))
+	file.write('</div>')
+
 	#end of file
 	file.write("</body></html>")
 	file.close()
@@ -160,6 +152,6 @@ if __name__ == "__main__":
 	e=[1,2,3,4,5]
 	UT_orange = "F77F00"
 	white = "FFFFFF"
-	print(html_report(b,c,d,e,text=white,bgcolor=UT_orange))
+	print(html_report(b,c,e,table=d,text=white,bgcolor=UT_orange))
 	
 	

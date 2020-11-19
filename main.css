@@ -1,0 +1,32 @@
+body {
+    background-color: #E8D2CA;
+    color: black;
+    font-family: Georgia;
+}
+
+h1{
+    font-weight: bold;
+    font-family:Arial;
+    text-align: center;
+}
+
+th{
+    background-color: #CAE8E1;
+}
+
+table, th, td {
+    
+    font-weight: bold;
+    border: 1px solid black;
+    border-collapse: collapse;
+}
+
+th, td{
+    text-align: center;
+}
+
+.footer{
+    color: gray;
+    text-align: center;
+    font-style: italic;
+}
