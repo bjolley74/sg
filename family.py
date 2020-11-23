@@ -6,8 +6,8 @@ formatter = logging.Formatter('%(asctime)s: %(levelname)s: %(name)s: %(message)s
 file_handler = logging.FileHandler('babysitting.log')
 file_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
-from mylib import *
-import datetime as dt
+from datetime import datetime as dt
+from mylib import print_heading, pause, get_input, clear
 
 logger.info("family.py run as {}".format(__name__))
 class Family:
