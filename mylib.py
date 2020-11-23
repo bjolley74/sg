@@ -8,13 +8,13 @@ def files(cwd,ext):
 	'''
 	directory = listdir()
 	for file in directory:
-		name, ext1 = file.split(".")
+		_, ext1 = file.split(".")
 		if ext1 == ext:
 			yield file
 			
 def pause():
 	'''function to allow user to review screen before continuing'''
-	x=input('\n\nPress Enter to continue')
+	_ = input('\n\nPress Enter to continue')
 
 def dict_to_list(dict):
 	'''

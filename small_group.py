@@ -26,7 +26,7 @@ def update_families():
 	'''
 	
 	logger.debug("Entered function")
-	fam_list = get_fam_list()
+	#fam_list = get_fam_list()
 	menu_list = [
 				"Add Family",
 				"Correct Family",
