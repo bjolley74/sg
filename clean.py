@@ -52,7 +52,7 @@ def main():
 	'''
 	logger.debug("**************clean.py start***********")
 	path = os.getcwd()
-	logger.debug("path = ".format(path))
+	logger.debug("path = {}".format(path))
 	clean_list = []
 	for x in open_file("removed_fams.txt"):
 		logger.debug("x = {}".format(x))

@@ -327,24 +327,22 @@ def remove_family():
 	print()
 	remove = int(input("Enter number of family to remove: "))
 	fam_2_remove = fam_list[remove]
-	print("This will delete the {} family - are you sure? ".format(
-		fam_2_remove,end=""
-		))
-	certain = input("Enter y/n ")
-	if certain.lower() == "y":
+	print(f"This will delete the {fam_2_remove} family - are you sure? ",end="")
+	certain = input(" Enter Yes or No ")
+	if certain[0].lower() == "y":
 		try:
 			fam_list.pop(remove)
 		except:
 			print("Error occured. No changes made. Check if family exists" +
 			" or is spelled correctly.")
 		else:	
-			print("{} family removed".format(fam_2_remove))
-			logger.info("{} family removed".format(fam_2_remove))
+			print(f"{fam_2_remove} family removed")
+			logger.info(f"{fam_2_remove} family removed")
 	else:
 		print("no changes made")
 	print("Families: ")
 	for fam in fam_list:
-		print("\t{}".format(fam))
+		print(f"\t{fam}")
 	save_fam(fam_list)
 	with open("removed_fams.txt","a+") as f:
 		f.write("{}".format(fam_2_remove))

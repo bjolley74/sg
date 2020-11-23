@@ -1,25 +1,13 @@
-#open and calculate run #
-sleep_time = 1
-print('importing libraries ', end = '', flush=True)
-import time
-time.sleep(sleep_time)
-with open("count.log","r") as f:
-	num_str = f.readline().strip()
-	run_count = int(num_str)
-run_count += 1
-with open("count.log","w") as g:
-	g.write(str(run_count))
-#print run# to log file
-log = "babysitting.log"
-start="\n*****************start of run # {}****************\n".format(run_count)
-with open(log,'a') as h:
-	h.write(start)
-import_success = True
-#import libraries
+import webbrowser as wb
 import logging
-time.sleep(sleep_time)
-print('.',end = '', flush=True)
+from family import Family, get_fam_list, create_fam, correct_fam, remove_family
+from mylib import print_heading, clear, pause
+from babysitters import view_babysitter_table, enter_bs_data
+from reports import html_report
+import clean
+
 ##logger set up
+log = "babysitting.log"
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 format = '%(asctime)s: %(levelname)s: %(name)s: %(funcName)s: %(message)s'
@@ -28,56 +16,6 @@ file_handler = logging.FileHandler(log)
 file_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
 
-try:
-	#print("importing family")
-	from family import *
-	print('.',end = '', flush=True)
-	time.sleep(sleep_time)
-except:
-	print("family did not load")
-	logger.exception("family.py did not load")
-	import_success = False
-try:
-	#print("importing mylib")
-	from mylib import *
-	print('.',end = '', flush=True)
-	time.sleep(sleep_time)
-except:
-	print("Could not load mylib")
-	logger.exception("Could not load mylib")
-	import_success = False
-try:
-	#print("loading babysitters")
-	from babysitters import *
-	print('.',end = '', flush=True)
-	time.sleep(sleep_time)
-except:
-	print("Could not load babysitters")
-	logger.exception("Could not load babysitters")
-	import_success = False
-try:
-	#print("loading reports")
-	from reports import html_report
-	print('.',end = '', flush=True)
-	time.sleep(sleep_time)
-except:
-	logger.exception("Could not load reports")
-	print("Could not load reports")
-	import_success = False
-try:
-	#print("loading clean")
-	import clean
-	print('.',end = '', flush=True)
-	time.sleep(sleep_time)
-except:
-	logger.exception("Could not load clean")
-	print("Could not load clean")
-	import_success = False
-import webbrowser as wb
-time.sleep(sleep_time)
-print('.',end = '', flush=True)
-print()
-print()
 def update_families():
 	'''
 	builds menu to update the list of families
@@ -333,17 +271,11 @@ def validate():
 
 	
 if __name__ == "__main__":
-	if import_success == True:
-		valid_user = validate()
-		if valid_user:
-			main()
-		else:
-			print("User Verification Failed - program terminated")
-			logger.critical("User Verification Failed - program terminated")
+	valid_user = validate()
+	if valid_user:
+		main()
 	else:
-		print("Error")
-	end="*****************end of run # {}****************\n".format(run_count)
-	with open(log,'a') as h:
-		h.write(end)
+		print("User Verification Failed - program terminated")
+		logger.critical("User Verification Failed - program terminated")
 	print_heading("Goodbye!")
 	
