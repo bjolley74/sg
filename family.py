@@ -6,8 +6,8 @@ formatter = logging.Formatter('%(asctime)s: %(levelname)s: %(name)s: %(message)s
 file_handler = logging.FileHandler('babysitting.log')
 file_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
-from mylib import *
-import datetime as dt
+from datetime import datetime as dt
+from mylib import print_heading, pause, get_input, clear
 
 logger.info("family.py run as {}".format(__name__))
 class Family:
@@ -124,17 +124,19 @@ class Family:
 
 	def save_html(self):
 		logger.debug("entering Family.save_html")
-		time = dt.datetime.now()
+		time = dt.now()
+
 		table = self.table
-		logger.info("writing {}".format(self.html))
+		logger.info(f"writing {self.html}")
 		html_file = open(self.html,"w")
 		html_file.write("<html>\n")
-		html_file.write("<head>\n<title>{} Table</title>\n</head>\n".format(self.last))
-		html_file.write("<body>\n")
-		html_file.write("<center>\n<h1>{} Family Table</h1>\n".format(self.last))
-		html_file.write("<br>\n"*4)
-		html_file.write("<table border=0>\n")
-		html_file.write("<tr>\n")
+		html_file.write("\t<head>\n")
+		html_file.write(f"\t\t<title>{self.last} Table</title>\n")
+		html_file.write("\t\t<link href='main.css' rel='stylesheet' type='text/css' />\n")
+		html_file.write("\t</head>\n")
+		html_file.write("\t<body>\n")
+		html_file.write(f"\t\t<h1>{self.last} Family Table</h1>\n")
+		html_file.write('\t\t<table class="center">\n')
 		count=0
 		for i in table:
 			list_len = len(i)
@@ -142,25 +144,35 @@ class Family:
 			if list_len == 3:
 				if count == 0:
 					a,b,c = i[0],i[1],i[2]
-					html_file.write('<th>{:12}</th>'.format(a))
-					html_file.write('<th>{:10}</th>'.format(b))
-					html_file.write('<th>{:10}</th>'.format(c))
-					html_file.write('<th>{:10}</th>\n</tr>'.format("Balance"))
+					html_file.write('\t\t\t<thead>\n')
+					html_file.write("\t\t\t\t<tr>\n")
+					html_file.write('\t\t\t\t\t<th>{:12}</th>\n'.format(a))
+					html_file.write('\t\t\t\t\t<th>{:10}</th>\n'.format(b))
+					html_file.write('\t\t\t\t\t<th>{:10}</th>\n'.format(c))
+					html_file.write('\t\t\t\t\t<th>{:10}</th>\n'.format("Balance"))
+					html_file.write('\t\t\t\t</tr>\n')
+					html_file.write('\t\t\t</thead>\n')
 					count += 1
 				else:
 					a,b,c = i[0],i[1],i[2]
 					d += float(b)-float(c)
-					html_file.write('<th>{:12}</th>'.format(a))
-					html_file.write('<th>{:10}</th>'.format(b))
-					html_file.write('<th>{:10}</th>'.format(c))
-					html_file.write('<th>{:10}</th>\n</tr>\n'.format(d))
+					if count == 1:
+						html_file.write('\t\t\t<tbody>\n')
+					html_file.write('\t\t\t\t<tr>\n')
+					html_file.write('\t\t\t\t\t<td>{:12}</td>\n'.format(a))
+					html_file.write('\t\t\t\t\t<td>{:10}</td>\n'.format(b))
+					html_file.write('\t\t\t\t\t<td>{:10}</td>\n'.format(c))
+					html_file.write('\t\t\t\t\t<td>{:10}</td>\n'.format(d))
+					html_file.write('\t\t\t\t</tr>\n')
+					count += 1
 			else:
-				logger.warning("list length of {} is incorrect".format(list_len))
-		html_file.write("</table></center>\n")
-		html_file.write("<br><br>\n")
-		html_file.write("<hr>")
-		html_file.write("<center><h4>{}</h4></center>".format(time))
-		html_file.write("</body>\n</html>\n")
+				logger.warning(f"list length of {list_len} is incorrect")
+		html_file.write('\t\t\t</tbody>\n')
+		html_file.write("\t\t</table>\n")
+		html_file.write("\t\t<br>\n\t\t<br>\n")
+		html_file.write('\t\t<footer>\n')
+		html_file.write(f"\t\t\t{time}\n")
+		html_file.write("\t\t</footer>\n\t</body>\n</html>\n")
 		logger.debug("exiting Family.save_html")
 		return "HTML File Saved"
 	
