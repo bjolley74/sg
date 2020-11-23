@@ -130,12 +130,9 @@ def html_report(b,c,*args,**kwargs):
 			file.write("<div>{}</div>\n".format(arg))
 			
 	#footer 
-	file.write("<div class='footer'>")
-	file.write("<hr>\n")
-	file.write("")
+	file.write("<footer>")
 	date = datetime.datetime.now()
-	file.write("<h4>{}</h4>\n".format(date))
-	file.write('</div>')
+	file.write(f"{date}\n")
 
 	#end of file
 	file.write("</body></html>")

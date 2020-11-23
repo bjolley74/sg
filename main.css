@@ -1,6 +1,7 @@
 html{
     font-size: 14px;
 }
+
 body {
     background-color: #E8D2CA;
     color: black;
@@ -36,22 +37,33 @@ h6{
     font-size: 1.75rem
 }
 th{
-    background-color: #CAE8E1;
+    background-color: #c4c9c8;
 }
 
-table, th, td {
-    
+table, th {
     font-weight: bold;
     border: 1px solid black;
     border-collapse: collapse;
-}
-
-th, td{
     text-align: center;
+    font-size: 14px;
+    width: 400px;
 }
 
-.footer{
-    color: gray;
+table.center {
+    margin-left:auto; 
+    margin-right:auto;
+}
+
+td{
+    font-weight: normal;
+    text-align: center;
+    padding: 5px, 10px;
+    border: 1px solid black;
+    font-size: 12px
+}
+
+footer{
     text-align: center;
     font-style: italic;
+    font-size: 11px;
 }
