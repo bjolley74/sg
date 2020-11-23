@@ -72,7 +72,7 @@ def html_report(b,c,*args,**kwargs):
 	num_args=len(args)
 	
 		#Section C - Tables
-	if "tables" in kwargs.keys():
+	if "table" in kwargs.keys():
 		t = kwargs['tables']
 		file.write("<hr>\n")
 		file.write("<br>\n<h3>Family Tables</h3>\n<br>")
