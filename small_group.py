@@ -54,12 +54,13 @@ def update_families():
 	
 				
 def menu(menu_name,menu_list,exit_char="x"):
+	clear()
 	logger.debug("entered menu function")
 	print_heading(menu_name)
 	for i, item in enumerate(menu_list):
-		print(f"\t\t{i} - {item}")
+		print(f"\t\t{i+1} - {item}")
 	print("\n\n\n")
-	choice = input(f"\t\tEnter selection or '{exit_char}' to exit \n")
+	choice = input(f"\t\tEnter selection or '{exit_char}' to exit ")
 	logger.debug("exiting menu function")
 	return choice
 	
@@ -73,37 +74,37 @@ def fam_sub_menu(Fam):
 				"Save Table to HTML"
 				]
 	while True:
-		choice = menu("{} Family Menu".format(last),sub_list)
+		choice = menu(f"{last} Family Menu", sub_list)
 		try:
 			num = int(choice)
-		except:
+		except ValueError:
 			logger.debug("exiting fam_sub_menu")
 			break
 		else:
 			if num == 1:
-				logger.debug("{} - view balance".format(last))
+				logger.debug("f{last} - view balance")
 				print()
-				output = "{} balance = {}".format(last, Fam.balance)
+				output = f"{last} balance = {Fam.balance}"
 				print(output)
 				print()
 				pause()
 			elif num == 2:
-				logger.debug("{} - view table".format(last))
+				logger.debug(f"{last} - view table")
 				clear()
 				Fam.print_table()
 
 			elif num == 3:
-				logger.debug("{} - update table".format(last))
+				logger.debug(f"{last} - update table")
 				Fam.update_table()
 			elif num == 4:
-				logger.debug("{} - save html".format(last))
+				logger.debug(f"{last} - save html")
 				print(Fam.save_html())
 				open_page = input('Would you like to open page now (y/n)? ')
 				if open_page.lower() == 'y':
 					print('opening page......')
 					wb.open(Fam.html,new=2,autoraise=False)
 			else:
-				print("{} - invalid number entered".format(num))
+				print(f"{num} - invalid number entered")
 				pause()
 
 def view_cash_on_hand():
@@ -111,8 +112,8 @@ def view_cash_on_hand():
 	coh = 0.0
 	d=view_all_balances()
 	for balance in d.values():
-		coh+=balance
-	logger.info("coh = {}".format(coh))
+		coh += balance
+	logger.info(f"coh = {coh}")
 	logger.debug("*************   Calculated Cash on Hand   *******************")
 	return coh
 
@@ -132,15 +133,8 @@ def bs_pay_sub_menu():
 			view_babysitter_table()
 		elif choice == '2':
 			enter_bs_data()
-		elif choice == '3':
-			clear()
-			print_heading("Cash On Hand")
-			cash=view_cash_on_hand()
-			print("\t\tCash on Hand = ${:,.2f}".format(cash))
-			print()
-			pause()
 		else:
-			print("wrong input = {}".format(choice))
+			print(f"wrong input = {choice}")
 			pause()
 
 def view_all_balances():
@@ -173,7 +167,7 @@ def actions_menu():
 		elif sel.isnumeric():
 			logger.debug("user input is numeric")
 			menu_num = int(sel)-1
-			logger.debug("menu_num = {}, sel = {}".format(menu_num,sel))
+			logger.debug(f"menu_num = {menu_num}, sel = {sel}")
 			if sel == '1':
 				logger.debug("Update Fam")
 				update_families()
@@ -189,12 +183,10 @@ def actions_menu():
 				logger.debug("babysitter payments".title())
 				bs_pay_sub_menu()
 			elif sel == '4':
-				#insert cash on hand call from bs_pay_sub_menu
 				clear()
 				print_heading("Cash On Hand")
-				cash=view_cash_on_hand()
-				print("\t\tCash on Hand = ${:,.2f}".format(cash))
-				print()
+				cash = view_cash_on_hand()
+				print(f"\t\tCash on Hand = ${cash:.2}\n")
 				pause()
 			elif sel == '5':
 				logger.debug("HTML Report")
@@ -202,7 +194,7 @@ def actions_menu():
 				d = {}
 				for fam in f:
 					family = Family(fam)
-					logger.info("family last = {}".format(family.last))
+					logger.info(f"family last = {family.last}")
 					family.save_html()
 					d[fam]=family.table
 				b = view_all_balances()
@@ -213,7 +205,7 @@ def actions_menu():
 				if open_html.lower() == "y":
 					wb.open('full_report.html',new=2,autoraise = False)
 		else:
-			logger.error("{} is invalid choice".format(sel))
+			logger.error(f"{sel} is invalid choice")
 			continue
 		
 #main program function
@@ -236,22 +228,22 @@ def main():
 			logger.debug("user input is numeric")
 			num_of_fams = (len(main_list) - len(add))
 			menu_num = int(sel)-1
-			logger.debug("num of fams = {}, menu_num = {}, sel = {}".format(num_of_fams,menu_num,sel))
+			logger.debug(f"num of fams = {num_of_fams}, menu_num = {menu_num}, sel = {sel}")
 			if int(sel) <= num_of_fams:
 				try:
 					fam = Family(main_list[menu_num])
 				except:
-					logger.exception("sel={0}, num_of_fams = {1}".format(menu_num,num_of_fams))
+					logger.exception(f"sel={menu_num}, num_of_fams = {num_of_fams}")
 				else:
 					fam_sub_menu(fam)
-					logger.debug("family name is {}".format(fam.last))
+					logger.debug(f"family name is {fam.last}")
 				finally:
 					logger.debug("selection success")
 			elif sel == str(num_of_fams + 1):
 				logger.debug("Actions Menu")
 				actions_menu()
 		else:
-			logger.error("{} is invalid choice".format(sel))
+			logger.error(f"{sel} is invalid choice")
 			continue
 
 def validate():
@@ -261,7 +253,7 @@ def validate():
 	losername = input("Enter First Name: ")
 	if losername.lower() in valid_users:
 		valid = True
-	logger.info("user entered = {}".format(losername))
+	logger.info(f"user entered = {losername}")
 	return valid
 
 	
