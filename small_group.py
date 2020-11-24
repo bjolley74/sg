@@ -177,7 +177,7 @@ def actions_menu():
 				print_heading("All Family Balances")
 				fam_balances = view_all_balances()
 				for name,balance in fam_balances.items():
-					print("{} balance = ${:,.2f}".format(name,balance))
+					print(f"{name} balance = ${balance:.2}")
 				pause()
 			elif sel == '3':
 				logger.debug("babysitter payments".title())
