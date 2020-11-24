@@ -26,7 +26,6 @@ def update_families():
 	'''
 	
 	logger.debug("Entered function")
-	#fam_list = get_fam_list()
 	menu_list = [
 				"Add Family",
 				"Correct Family",
@@ -55,17 +54,13 @@ def update_families():
 	
 				
 def menu(menu_name,menu_list,exit_char="x"):
-	logger.debug("entered function")
+	logger.debug("entered menu function")
 	print_heading(menu_name)
-	num_items = len(menu_list)
-	for i in range(num_items):
-		print("\t\t{} - {}".format(i+1,menu_list[i]))
-	print()
-	print()
-	print()
-	choice = input("\t\tEnter selection or '{}' to exit ".format(exit_char))
-	print()
-	logger.debug("exiting function")
+	for i, item in enumerate(menu_list):
+		print(f"\t\t{i} - {item}")
+	print("\n\n\n")
+	choice = input(f"\t\tEnter selection or '{exit_char}' to exit \n")
+	logger.debug("exiting menu function")
 	return choice
 	
 def fam_sub_menu(Fam):
