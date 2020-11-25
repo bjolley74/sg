@@ -1,20 +1,21 @@
 import webbrowser as wb
 import logging
 from family import Family, get_fam_list, create_fam, correct_fam, remove_family
-from mylib import print_heading, clear, pause
+from mylib import print_heading, clear, pause, check_for_file
 from babysitters import view_babysitter_table, enter_bs_data
 from reports import html_report
 import clean
 
 ##logger set up
-log = "babysitting.log"
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 format = '%(asctime)s: %(levelname)s: %(name)s: %(funcName)s: %(message)s'
 formatter = logging.Formatter(format)
-file_handler = logging.FileHandler(log)
+file_handler = logging.FileHandler('logs/babysitting.log')
 file_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
+
+logger.info('\n\n')
 
 def update_families():
 	'''
@@ -116,8 +117,6 @@ def view_cash_on_hand():
 	logger.info(f"coh = {coh}")
 	logger.debug("*************   Calculated Cash on Hand   *******************")
 	return coh
-
-
 
 def bs_pay_sub_menu():
 	logger.debug("entered bs_pay_sub_menu")
@@ -247,6 +246,10 @@ def main():
 			continue
 
 def validate():
+	'''
+	validates required files exist and records username
+	'''
+
 	logger.debug("Entered validate function")
 	valid_users=["bobby","bonnie","bj"]
 	valid = False
@@ -256,13 +259,22 @@ def validate():
 	logger.info(f"user entered = {losername}")
 	return valid
 
+def exit_protocol(**kwargs):
+	if 'error' in kwargs.keys():
+		exit_code = 1
+		logger.critical(f"exit code: {exit_code}: error msg: {kwargs['error']}")
+		print(f'exiting program with exit code{exit_code}\n{kwargs["error"]}')
+	else:
+		exit_code = 0
+		logger.info(f'exit code: {exit_code}')
+	print_heading("Goodbye!")
 	
 if __name__ == "__main__":
 	valid_user = validate()
 	if valid_user:
 		main()
 	else:
-		print("User Verification Failed - program terminated")
+		exit_protocol(error="User Verification Failed - program terminated")
 		logger.critical("User Verification Failed - program terminated")
-	print_heading("Goodbye!")
+	
 	

@@ -93,3 +93,8 @@ def get_input(mylist):
 		item_in = input(item)
 		list_out.append(item_in)
 	return list_out
+
+def check_for_file(filepath):
+	if not path.exists(filepath):
+		file = open(filepath, 'w')
+		file.close()

@@ -3,24 +3,16 @@ import mylib as ml
 import logging
 import datetime
 import babysitters as bs
-#from family import get_fam_list
 
-log = "babysitting.log"
+
 ##logger set up
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 format = '%(asctime)s: %(levelname)s: %(name)s: %(funcName)s: %(message)s'
 formatter = logging.Formatter(format)
-file_handler = logging.FileHandler(log)
+file_handler = logging.FileHandler('logs/babysitting.log')
 file_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
-
-logger.info("******* reports.py  *****************")
-
-#todo
-#  
-#
-#  
 
 def html_report(b,c,*args,**kwargs):
 	'''
@@ -44,100 +36,106 @@ def html_report(b,c,*args,**kwargs):
 	logger.info("kwargs = {}".format(kwargs))
 	
 	#open file
-	file = open("full_report.html", "w")
-	file.write("<html>\n")
+	html_filename = 'reports/full_report.html'
+	with open(html_filename, "w") as html_file:
+		html_file.write("<html>\n")
 	
-	#HTML head
-	file.write("<head>\n")
-	file.write("<title>")
-	file.write("Full Small Group Babysitting Report")
-	file.write("</title>\n")
-	file.write("<link href='main.css' type='text/css' rel='stylesheet'/>")
-	file.write("</head>\n")
+		#HTML head
+		html_file.write("\t<head>\n")
+		html_file.write("\t\t<title>Full Small Group Babysitting Report</title>\n")
+		html_file.write("\t\t<link href='main.css' type='text/css' rel='stylesheet'/>\n")
+		html_file.write("\t</head>\n")
 	
-	#HTML body
-	file.write("<body>")
+		#HTML body
+		html_file.write("\t\t<body>")
 	
-	#Heading
-	file.write("<h1>Small Group Babysitting Report</h1>\n")
+		#Heading
+		html_file.write("\t\t\t<h1>Small Group Babysitting Report</h1>\n")
 	
-	#Section A - Family Balances 
-	file.write("<br><br>\n<h3>Family Balances</h3>\n")
-	for key in a:
-		file.write("<div class='family-balance'>{} balance is ${:.2f}</div>\n".format(key,b[key]))
-	file.write("<hr><br>\n")
+		#Section A - Family Balances 
+		html_file.write("\t\t\t<br>\n\t\t\t<h3>Family Balances</h3>\n")
+		for key in a:
+			html_file.write(f"\t\t\t<div class='family-balance'>{key} balance is ${b[key]:.2f}</div>\n")
+		html_file.write("\t\t\t<hr>\n\t\t\t<br>\n")
 	
-	#Section B - Cash On Hand
-	file.write("<h3>Cash on Hand</h3>\n<br>\n Cash on hand = ${:.2f}</h3>\n".format(c))
-	num_args=len(args)
-	
-		#Section C - Tables
-	if "table" in kwargs.keys():
-		t = kwargs['tables']
-		file.write("<hr>\n")
-		file.write("<br>\n<h3>Family Tables</h3>\n<br>")
-		for f,tbl in t.items():
-			file.write("<h4>{} Family Table</h4>".format(f))
-			headers = tbl.pop(0)
-			headers.append('Balance')
-			file.write("<table>")
-			money_in = [float(x[1]) for x in tbl]
-			money_out = [float(x[2]) for x in tbl]
-			z = zip(money_in,money_out)
-			weekly = [x-y for (x,y) in z]
-			loop = 0
-			file.write('</tr>')
-			for col in headers:
-				file.write("<th>{}</th>".format(col))
-			file.write("<tr>")
-			for row in tbl:
-				logger.debug("row: {}".format(row))
-				file.write("<tr>")
-				row.append(weekly[loop])
-				loop+=1
-				for item in row:
-					logger.debug("item: {}".format(item))
-					file.write("<td>{}</td>".format(item))
-				logger.debug('loop now = {}'.format(loop))
-			file.write("</tr>")
-		file.write("</table>")
-	
-	#Babysitter data
-	bs_data = bs.open_dat()
-	file.write("<hr>")
-	file.write("<h3>Babysitter Payments</h3>\n")
-	file.write("<table border=0>\n")
-	file.write("<tr>\n")
-	file.write("<th>{:15}</th>".format("Date"))
-	file.write("<th>{:10}</th>".format("# Sitters"))
-	file.write("<th>{:15}</th>".format("Amt Paid Each"))
-	file.write("<th>{:15}</th></tr>\n".format("Total Paid"))
-	for line in bs_data:
-		file.write("<tr>")
-		e,f,g,h = line[0],line[1],line[2], int(line[1]) * float(line[2])
-		file.write("<td>{:15}</td>".format(e))
-		file.write('<td>{:10}</td>'.format(f))
-		file.write('<td>{:15}</td>'.format(g))
-		file.write("<td>{:10}</td>\n".format(h))
-		file.write("</tr>\n")
-	file.write("</table>")
-	#file.write("<a href='bs_data.html'>Babysitter Data</a>\n<br>\n")
-	
-	#Additional Info
-	if num_args > 1:
-		file.write("<hr><br><h3>Additional Info</h3>\n")
-		for arg in args:
-			file.write("<div>{}</div>\n".format(arg))
-			
-	#footer 
-	file.write("<footer>")
-	date = datetime.datetime.now()
-	file.write(f"{date}\n")
+		#Section B - Cash On Hand
+		html_file.write(f"\t\t\t<h3>Cash on Hand</h3>\n\t\t\t<br>\n\t\t\tCash on hand = ${c:.2f}</h3>\n")
+		num_args=len(args)
 
-	#end of file
-	file.write("</body></html>")
-	file.close()
-	
+		#Section C - Tables
+		if "table" in kwargs.keys():
+			t = kwargs['table']
+			html_file.write("\t\t\t<hr>\n")
+			html_file.write("\t\t\t<br>\n\t\t\t<h3>Family Tables</h3>\n\t\t\t<br>")
+			for f, tbl in t.items():
+				html_file.write(f"\t\t\t<h4>{f} Family Table</h4>\n")
+				headers = tbl.pop(0)
+				headers.append('Balance')
+				html_file.write("\t\t\t<table>\n")
+				html_file.write('\t\t\t\t<thead>\n')
+				money_in = [float(x[1]) for x in tbl]
+				money_out = [float(x[2]) for x in tbl]
+				z = zip(money_in,money_out)
+				weekly = [x-y for (x,y) in z]
+				loop = 0
+				html_file.write('\t\t\t\t\t<tr>\n')
+				for col in headers:
+					html_file.write(f"\t\t\t\t\t\t<th>{col}</th>\n")
+				html_file.write("\t\t\t\t\t</tr>\n")
+				html_file.write('\t\t\t\t</thead>\n')
+				html_file.write('\t\t\t\t</tbody>\n')
+				for row in tbl:
+					logger.debug(f"row: {row}")
+					html_file.write("\t\t\t\t\t<tr>\n")
+					row.append(weekly[loop])
+					loop += 1
+					for item in row:
+						logger.debug(f"item: {item}")
+						html_file.write(f"\t\t\t\t\t\t<td>{item}</td>\n")
+					logger.debug(f'loop now = {loop}')
+				html_file.write("\t\t\t\t\t</tr>\n")
+				html_file.write('\t\t\t\t</tbody>\n')
+			html_file.write("\t\t\t</table>\n")
+		
+		#Babysitter data
+		headers = ['Date', '# Sitters', "Amt Paid Each", "Total Paid"]
+		bs_data = bs.open_dat()
+		html_file.write("\t\t\t<hr>\n")
+		html_file.write("\t\t\t<h3>Babysitter Payments</h3>\n")
+		html_file.write("\t\t\t\t<table>\n")
+		html_file.write('\t\t\t\t\t<thead>\n')
+		html_file.write("\t\t\t\t\t\t<tr>\n")
+		for head in headers:
+			html_file.write(f"\t\t\t\t\t\t\t<th>{head:15}</th>\n")
+		html_file.write('\t\t\t\t\t\t</tr>\n')
+		html_file.write('\t\t\t\t\t</thead>\n')
+		html_file.write('\t\t\t\t\t<tbody>\n')
+		for line in bs_data:
+			html_file.write("\t\t\t\t\t\t<tr>\n")
+			for item in line:
+				html_file.write(f"\t\t\t\t\t\t\t<td>{item:15}</td>\n")
+			html_file.write(f"\t\t\t\t\t\t\t<td>{int(line[1]) * float(line[2]):15}</td>\n")
+			html_file.write("\t\t\t\t\t\t</tr>\n")
+		html_file.write('\t\t\t\t\t</tbody>\n')
+		html_file.write("\t\t\t\t</table>")
+
+		#Additional Info
+		if num_args > 1:
+			html_file.write("\t\t\t<hr>\n\t\t\t<br>\n\t\t\t<h3>Additional Info</h3>\n")
+			html_file.write('\t\t\t\t<ul>\n')
+			for arg in args:
+				html_file.write(f"\t\t\t\t\t<li>{arg}</li>\n")
+			
+		#footer 
+		html_file.write("\t\t<footer>")
+		date = datetime.datetime.now()
+		d = date.strftime("%m/%d/%Y, %H:%M:%S")
+		html_file.write(f"\t\t\t{d}\n")
+		html_file.write('\t\t</footer>\n')
+
+		#end of file
+		html_file.write("\t</body>\n</html>\n")
+
 	logger.info("*********  HTML Report Saved  *****************")
 	return "full_report.html saved"
 
@@ -145,10 +143,10 @@ if __name__ == "__main__":
 	#use to test module
 	b={"George":1,"Ralph":2,"Bonnie":3,"Burt":4,"Andrew":5}
 	c=24.53
-	d={"George":[1,2,3,4,5],"Ralph":[2,4,6,8,10],"Bonnie":[3,6,9,12,15],"Burt":[4,8,12,16,20],"Andrew":[5,10,15,20,25]}
+	d={"George":{'1':[1,2,3,4,5]},"Ralph":{'2':[2,4,6,8,10]},"Bonnie":{'3':[3,6,9,12,15]},"Burt":{'4':[4,8,12,16,20]},"Andrew":{'5':[5,10,15,20,25]}}
 	e=[1,2,3,4,5]
 	UT_orange = "F77F00"
 	white = "FFFFFF"
-	print(html_report(b,c,e,table=d,text=white,bgcolor=UT_orange))
+	print(html_report(b,c,e,d,text=white,bgcolor=UT_orange))
 	
 	
