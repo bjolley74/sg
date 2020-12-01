@@ -1,6 +1,8 @@
-data/
-reports/
-logs/
+*.csv
+*.txt
+*.html
+*.pdf
+*.log
 .vscode/
 __pycache__/
 *.ods

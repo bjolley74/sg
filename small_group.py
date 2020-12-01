@@ -1,10 +1,10 @@
 import webbrowser as wb
 import logging
+from os.path import exists
 from family import Family, get_fam_list, create_fam, correct_fam, remove_family
 from mylib import print_heading, clear, pause, check_for_file
 from babysitters import view_babysitter_table, enter_bs_data
 from reports import html_report
-import clean
 
 ##logger set up
 logger = logging.getLogger(__name__)
@@ -51,7 +51,6 @@ def update_families():
 			if num == 3:
 				logger.debug("menu choice - remove family")
 				remove_family()
-				clean.main()
 	
 				
 def menu(menu_name,menu_list,exit_char="x"):
@@ -247,34 +246,46 @@ def main():
 
 def validate():
 	'''
-	validates required files exist and records username
-	'''
+	validates required files exist 
+		'''
 
 	logger.debug("Entered validate function")
-	valid_users=["bobby","bonnie","bj"]
-	valid = False
-	losername = input("Enter First Name: ")
-	if losername.lower() in valid_users:
-		valid = True
-	logger.info(f"user entered = {losername}")
+	valid = True
+	with open('data/files.dat', 'r') as f:
+		file_list = []
+		line = f.readline().strip()
+		while line:
+			file_list.append(line)
+			line = f.readline().strip()
+	for file_name in file_list:
+		if not exists(file_name):
+			print(f'creating {file_name}')
+			logger.info(f'{file_name} created')
+			try:
+				with open(file_name, 'w') as f:
+					f.write('')
+			except (FileNotFoundError, OSError) as e:
+				print(f"Error: {e.strerror}")
+				logger.debug(e)
+				valid = False
 	return valid
 
 def exit_protocol(**kwargs):
-	if 'error' in kwargs.keys():
+	if 'error_' in kwargs.keys():
 		exit_code = 1
-		logger.critical(f"exit code: {exit_code}: error msg: {kwargs['error']}")
-		print(f'exiting program with exit code{exit_code}\n{kwargs["error"]}')
+		logger.critical(f"exit code: {exit_code}: error msg: {kwargs['error_']}")
+		print(f'exiting program with exit code{exit_code}\n{kwargs["error_"]}')
 	else:
 		exit_code = 0
 		logger.info(f'exit code: {exit_code}')
 	print_heading("Goodbye!")
 	
 if __name__ == "__main__":
-	valid_user = validate()
-	if valid_user:
+	files_valid = validate()
+	if files_valid:
 		main()
 	else:
-		exit_protocol(error="User Verification Failed - program terminated")
-		logger.critical("User Verification Failed - program terminated")
+		exit_protocol(error_="File Verification Failed - program terminated")
+		logger.critical("File Verification Failed - program terminated")
 	
 	
