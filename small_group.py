@@ -1,83 +1,22 @@
-#open and calculate run #
-sleep_time = 1
-print('importing libraries ', end = '', flush=True)
-import time
-time.sleep(sleep_time)
-with open("count.log","r") as f:
-	num_str = f.readline().strip()
-	run_count = int(num_str)
-run_count += 1
-with open("count.log","w") as g:
-	g.write(str(run_count))
-#print run# to log file
-log = "babysitting.log"
-start="\n*****************start of run # {}****************\n".format(run_count)
-with open(log,'a') as h:
-	h.write(start)
-import_success = True
-#import libraries
+import webbrowser as wb
 import logging
-time.sleep(sleep_time)
-print('.',end = '', flush=True)
+from family import Family, get_fam_list, create_fam, correct_fam, remove_family
+from mylib import print_heading, clear, pause, check_for_file
+from babysitters import view_babysitter_table, enter_bs_data
+from reports import html_report
+import clean
+
 ##logger set up
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 format = '%(asctime)s: %(levelname)s: %(name)s: %(funcName)s: %(message)s'
 formatter = logging.Formatter(format)
-file_handler = logging.FileHandler(log)
+file_handler = logging.FileHandler('logs/babysitting.log')
 file_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
 
-try:
-	#print("importing family")
-	from family import *
-	print('.',end = '', flush=True)
-	time.sleep(sleep_time)
-except:
-	print("family did not load")
-	logger.exception("family.py did not load")
-	import_success = False
-try:
-	#print("importing mylib")
-	from mylib import *
-	print('.',end = '', flush=True)
-	time.sleep(sleep_time)
-except:
-	print("Could not load mylib")
-	logger.exception("Could not load mylib")
-	import_success = False
-try:
-	#print("loading babysitters")
-	from babysitters import *
-	print('.',end = '', flush=True)
-	time.sleep(sleep_time)
-except:
-	print("Could not load babysitters")
-	logger.exception("Could not load babysitters")
-	import_success = False
-try:
-	#print("loading reports")
-	from reports import html_report
-	print('.',end = '', flush=True)
-	time.sleep(sleep_time)
-except:
-	logger.exception("Could not load reports")
-	print("Could not load reports")
-	import_success = False
-try:
-	#print("loading clean")
-	import clean
-	print('.',end = '', flush=True)
-	time.sleep(sleep_time)
-except:
-	logger.exception("Could not load clean")
-	print("Could not load clean")
-	import_success = False
-import webbrowser as wb
-time.sleep(sleep_time)
-print('.',end = '', flush=True)
-print()
-print()
+logger.info('\n\n')
+
 def update_families():
 	'''
 	builds menu to update the list of families
@@ -88,7 +27,6 @@ def update_families():
 	'''
 	
 	logger.debug("Entered function")
-	fam_list = get_fam_list()
 	menu_list = [
 				"Add Family",
 				"Correct Family",
@@ -117,17 +55,14 @@ def update_families():
 	
 				
 def menu(menu_name,menu_list,exit_char="x"):
-	logger.debug("entered function")
+	clear()
+	logger.debug("entered menu function")
 	print_heading(menu_name)
-	num_items = len(menu_list)
-	for i in range(num_items):
-		print("\t\t{} - {}".format(i+1,menu_list[i]))
-	print()
-	print()
-	print()
-	choice = input("\t\tEnter selection or '{}' to exit ".format(exit_char))
-	print()
-	logger.debug("exiting function")
+	for i, item in enumerate(menu_list):
+		print(f"\t\t{i+1} - {item}")
+	print("\n\n\n")
+	choice = input(f"\t\tEnter selection or '{exit_char}' to exit ")
+	logger.debug("exiting menu function")
 	return choice
 	
 def fam_sub_menu(Fam):
@@ -140,37 +75,37 @@ def fam_sub_menu(Fam):
 				"Save Table to HTML"
 				]
 	while True:
-		choice = menu("{} Family Menu".format(last),sub_list)
+		choice = menu(f"{last} Family Menu", sub_list)
 		try:
 			num = int(choice)
-		except:
+		except ValueError:
 			logger.debug("exiting fam_sub_menu")
 			break
 		else:
 			if num == 1:
-				logger.debug("{} - view balance".format(last))
+				logger.debug("f{last} - view balance")
 				print()
-				output = "{} balance = {}".format(last, Fam.balance)
+				output = f"{last} balance = {Fam.balance}"
 				print(output)
 				print()
 				pause()
 			elif num == 2:
-				logger.debug("{} - view table".format(last))
+				logger.debug(f"{last} - view table")
 				clear()
 				Fam.print_table()
 
 			elif num == 3:
-				logger.debug("{} - update table".format(last))
+				logger.debug(f"{last} - update table")
 				Fam.update_table()
 			elif num == 4:
-				logger.debug("{} - save html".format(last))
+				logger.debug(f"{last} - save html")
 				print(Fam.save_html())
 				open_page = input('Would you like to open page now (y/n)? ')
 				if open_page.lower() == 'y':
 					print('opening page......')
 					wb.open(Fam.html,new=2,autoraise=False)
 			else:
-				print("{} - invalid number entered".format(num))
+				print(f"{num} - invalid number entered")
 				pause()
 
 def view_cash_on_hand():
@@ -178,12 +113,10 @@ def view_cash_on_hand():
 	coh = 0.0
 	d=view_all_balances()
 	for balance in d.values():
-		coh+=balance
-	logger.info("coh = {}".format(coh))
+		coh += balance
+	logger.info(f"coh = {coh}")
 	logger.debug("*************   Calculated Cash on Hand   *******************")
 	return coh
-
-
 
 def bs_pay_sub_menu():
 	logger.debug("entered bs_pay_sub_menu")
@@ -199,15 +132,8 @@ def bs_pay_sub_menu():
 			view_babysitter_table()
 		elif choice == '2':
 			enter_bs_data()
-		elif choice == '3':
-			clear()
-			print_heading("Cash On Hand")
-			cash=view_cash_on_hand()
-			print("\t\tCash on Hand = ${:,.2f}".format(cash))
-			print()
-			pause()
 		else:
-			print("wrong input = {}".format(choice))
+			print(f"wrong input = {choice}")
 			pause()
 
 def view_all_balances():
@@ -240,7 +166,7 @@ def actions_menu():
 		elif sel.isnumeric():
 			logger.debug("user input is numeric")
 			menu_num = int(sel)-1
-			logger.debug("menu_num = {}, sel = {}".format(menu_num,sel))
+			logger.debug(f"menu_num = {menu_num}, sel = {sel}")
 			if sel == '1':
 				logger.debug("Update Fam")
 				update_families()
@@ -250,18 +176,16 @@ def actions_menu():
 				print_heading("All Family Balances")
 				fam_balances = view_all_balances()
 				for name,balance in fam_balances.items():
-					print("{} balance = ${:,.2f}".format(name,balance))
+					print(f"{name} balance = ${balance:.2}")
 				pause()
 			elif sel == '3':
 				logger.debug("babysitter payments".title())
 				bs_pay_sub_menu()
 			elif sel == '4':
-				#insert cash on hand call from bs_pay_sub_menu
 				clear()
 				print_heading("Cash On Hand")
-				cash=view_cash_on_hand()
-				print("\t\tCash on Hand = ${:,.2f}".format(cash))
-				print()
+				cash = view_cash_on_hand()
+				print(f"\t\tCash on Hand = ${cash:.2}\n")
 				pause()
 			elif sel == '5':
 				logger.debug("HTML Report")
@@ -269,7 +193,7 @@ def actions_menu():
 				d = {}
 				for fam in f:
 					family = Family(fam)
-					logger.info("family last = {}".format(family.last))
+					logger.info(f"family last = {family.last}")
 					family.save_html()
 					d[fam]=family.table
 				b = view_all_balances()
@@ -280,7 +204,7 @@ def actions_menu():
 				if open_html.lower() == "y":
 					wb.open('full_report.html',new=2,autoraise = False)
 		else:
-			logger.error("{} is invalid choice".format(sel))
+			logger.error(f"{sel} is invalid choice")
 			continue
 		
 #main program function
@@ -303,47 +227,54 @@ def main():
 			logger.debug("user input is numeric")
 			num_of_fams = (len(main_list) - len(add))
 			menu_num = int(sel)-1
-			logger.debug("num of fams = {}, menu_num = {}, sel = {}".format(num_of_fams,menu_num,sel))
+			logger.debug(f"num of fams = {num_of_fams}, menu_num = {menu_num}, sel = {sel}")
 			if int(sel) <= num_of_fams:
 				try:
 					fam = Family(main_list[menu_num])
 				except:
-					logger.exception("sel={0}, num_of_fams = {1}".format(menu_num,num_of_fams))
+					logger.exception(f"sel={menu_num}, num_of_fams = {num_of_fams}")
 				else:
 					fam_sub_menu(fam)
-					logger.debug("family name is {}".format(fam.last))
+					logger.debug(f"family name is {fam.last}")
 				finally:
 					logger.debug("selection success")
 			elif sel == str(num_of_fams + 1):
 				logger.debug("Actions Menu")
 				actions_menu()
 		else:
-			logger.error("{} is invalid choice".format(sel))
+			logger.error(f"{sel} is invalid choice")
 			continue
 
 def validate():
+	'''
+	validates required files exist and records username
+	'''
+
 	logger.debug("Entered validate function")
 	valid_users=["bobby","bonnie","bj"]
 	valid = False
 	losername = input("Enter First Name: ")
 	if losername.lower() in valid_users:
 		valid = True
-	logger.info("user entered = {}".format(losername))
+	logger.info(f"user entered = {losername}")
 	return valid
 
+def exit_protocol(**kwargs):
+	if 'error' in kwargs.keys():
+		exit_code = 1
+		logger.critical(f"exit code: {exit_code}: error msg: {kwargs['error']}")
+		print(f'exiting program with exit code{exit_code}\n{kwargs["error"]}')
+	else:
+		exit_code = 0
+		logger.info(f'exit code: {exit_code}')
+	print_heading("Goodbye!")
 	
 if __name__ == "__main__":
-	if import_success == True:
-		valid_user = validate()
-		if valid_user:
-			main()
-		else:
-			print("User Verification Failed - program terminated")
-			logger.critical("User Verification Failed - program terminated")
+	valid_user = validate()
+	if valid_user:
+		main()
 	else:
-		print("Error")
-	end="*****************end of run # {}****************\n".format(run_count)
-	with open(log,'a') as h:
-		h.write(end)
-	print_heading("Goodbye!")
+		exit_protocol(error="User Verification Failed - program terminated")
+		logger.critical("User Verification Failed - program terminated")
+	
 	

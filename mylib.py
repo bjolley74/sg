@@ -8,13 +8,13 @@ def files(cwd,ext):
 	'''
 	directory = listdir()
 	for file in directory:
-		name, ext1 = file.split(".")
+		_, ext1 = file.split(".")
 		if ext1 == ext:
 			yield file
 			
 def pause():
 	'''function to allow user to review screen before continuing'''
-	x=input('\n\nPress Enter to continue')
+	_ = input('\n\nPress Enter to continue')
 
 def dict_to_list(dict):
 	'''
@@ -93,3 +93,8 @@ def get_input(mylist):
 		item_in = input(item)
 		list_out.append(item_in)
 	return list_out
+
+def check_for_file(filepath):
+	if not path.exists(filepath):
+		file = open(filepath, 'w')
+		file.close()

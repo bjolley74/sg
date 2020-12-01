@@ -1,9 +1,10 @@
+from pathlib import Path
 import logging
 ##logger set up
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 formatter = logging.Formatter('%(asctime)s: %(levelname)s: %(name)s: %(message)s')
-file_handler = logging.FileHandler('babysitting.log')
+file_handler = logging.FileHandler('logs/babysitting.log')
 file_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
 from datetime import datetime as dt
@@ -28,8 +29,8 @@ class Family:
 	
 	def __init__(self,last_name):
 		self.last = last_name
-		self.filename = self.last + ".csv"
-		self.html = self.last + ".html"
+		self.filename = Path('data/'+ self.last + ".csv")
+		self.html = Path('reports/' + self.last + ".html")
 		self.table = self.open_csv()
 	
 	@property
@@ -40,7 +41,7 @@ class Family:
 		for item in self.table:
 			if count == 0:
 				count += 1
-				logger.debug("{} thrown out".format(item[1]))
+				logger.debug(f"{item[1]} thrown out")
 			else:
 				mon_in.append(float(item[1]))
 		logger.debug("exited money_out")
@@ -110,15 +111,14 @@ class Family:
 	
 	def open_csv(self, opt='r'):
 		logger.debug("Entered open_csv")
-		logger.info("last name is {}".format(self.last))
-		file=open(self.filename,opt)
-		l=[]
-		line=file.readline().strip()
-		while line:
-			line2=line.split(',')
-			l.append(line2)
+		logger.info(f"last name is {self.last}")
+		with open(self.filename, opt) as file:
+			l=[]
 			line=file.readline().strip()
-		file.close()
+			while line:
+				line2=line.split(',')
+				l.append(line2)
+				line=file.readline().strip()
 		logger.debug("exited open_csv")
 		return l
 
@@ -250,7 +250,7 @@ def save_fam(fam):
 	
 	logger.debug("Entered save_fam")
 	string = ",".join(fam)
-	with open("families.txt",'w') as f:
+	with open("./data/families.txt",'w') as f:
 		f.write(string)
 	logger.debug("Family list saved")
 	
@@ -262,7 +262,7 @@ def get_fam_list():
 	'''
 	
 	logger.debug("Entered get_fam_list")
-	with open("families.txt","r") as f:
+	with open("./data/families.txt","r") as f:
 		line=f.readline().strip()
 		fam_list = line.split(',')
 	logger.debug("Exiting get_fam_list")
@@ -294,7 +294,7 @@ def create_fam():
 																)
 						)
 		else:
-			filename = last + ".csv"
+			filename = Path('./data/' + last + ".csv")
 			with open(filename,"w+") as f:
 				f.write("Date,Money_in,Money_out")
 			again = input("Enter another family? (y/n) ")
@@ -311,7 +311,7 @@ def remove_family():
 	'''
 	Allows user to remove family from family list
 	
-	No arguments - displays families from families.txt along with a number
+	No arguments - displays families from   along with a number
 	asks for input from user on which number to remove and then pops that 
 	family from list and resaves the new family list. Saves popped family to 
 	removed_fams.dat for later removal of associated files (CSV,HTML,ETC)
@@ -320,34 +320,32 @@ def remove_family():
 	logger.debug("Entered remove_family")
 	print_heading("Delete Family")
 	fam_list = get_fam_list()
-	list_len = len(fam_list)
 	print()
-	for i in range(list_len):
-		print("{} - {}".format(i,fam_list[i]))
+	for i, item in enumerate(fam_list):
+		print(f"{i} - {item}")
 	print()
 	remove = int(input("Enter number of family to remove: "))
 	fam_2_remove = fam_list[remove]
-	print("This will delete the {} family - are you sure? ".format(
-		fam_2_remove,end=""
-		))
-	certain = input("Enter y/n ")
-	if certain.lower() == "y":
+	print(f"This will delete the {fam_2_remove} family - are you sure? ",end="")
+	certain = input(" Enter Yes or No ")
+	if certain[0].lower() == "y":
 		try:
 			fam_list.pop(remove)
 		except:
 			print("Error occured. No changes made. Check if family exists" +
 			" or is spelled correctly.")
 		else:	
-			print("{} family removed".format(fam_2_remove))
-			logger.info("{} family removed".format(fam_2_remove))
+			print(f"{fam_2_remove} family removed")
+			logger.info(f"{fam_2_remove} family removed")
 	else:
 		print("no changes made")
 	print("Families: ")
 	for fam in fam_list:
-		print("\t{}".format(fam))
+		print(f"\t{fam}")
 	save_fam(fam_list)
-	with open("removed_fams.txt","a+") as f:
-		f.write("{}".format(fam_2_remove))
+	fams_to_remove = Path('./data/removed_fams.txt')
+	with open(fams_to_remove,"a+") as f:
+		f.write(f"{fam_2_remove}\n")
 	logger.debug("Exiting remove_family")
 	
 def correct_fam():
@@ -359,11 +357,10 @@ def correct_fam():
 	for i in range(list_len):
 		print("{} - {}".format(i,fam_list[i]))
 	fam_2_correct = int(input("Enter number of family member to correct: "))
-	old_fn = fam_list[fam_2_correct] + ".csv"
+	old_fn = Path('./data/' + fam_list[fam_2_correct] + ".csv")
 	fam_list[fam_2_correct] = input("Enter correction: ")
-	new_fn = fam_list[fam_2_correct] + ".csv"
-	from os import getcwd,chdir,rename
-	print(getcwd())
+	new_fn = Path('./data/' + fam_list[fam_2_correct] + ".csv")
+	from os import rename
 	pause()
 	rename(old_fn,new_fn)
 	print("\nNew family list:")

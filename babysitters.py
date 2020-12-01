@@ -3,10 +3,11 @@ import logging
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 formatter = logging.Formatter('%(asctime)s: %(levelname)s: %(name)s: %(message)s')
-file_handler = logging.FileHandler('babysitting.log')
+file_handler = logging.FileHandler('logs/babysitting.log')
 file_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
-from mylib import *
+from mylib import pause, get_input, check_for_file
+
 logger.info('******* babysitters start************')
 
 
@@ -17,26 +18,35 @@ def save_bs_html(nested_list):
 	Takes a nested_list of babysitter data as input and saves it into a HTML 
 	file. 
 	'''
-	
-	logger.debug("entered save_bs_html")
-	with open("bs_data.html","w") as file:
-		file.write("<html>\n")
-		file.write("<body text=black bgcolor=white>\n")
-		file.write("<h1>Babysitter Payments</h1>\n")
-		file.write("<table border=0>\n")
-		file.write("<tr>\n")
-		file.write("<th>{:15}</th>".format("Date"))
-		file.write("<th>{:10}</th>".format("# Sitters"))
-		file.write("<th>{:15}</th>".format("Amt Paid Each"))
-		file.write("<th>{:15}</th></tr>\n".format("Total Paid"))
+
+	logger.debug("entered babysitters.py/save_bs_html")
+	header = ['Date', '# Sitters', 'Amt Paid Each', 'Total Paid']
+	with open("reports/bs_data.html","w") as file:
+		file.write("<html>\n\t<head>\n")
+		file.write("\t\t<link href='main.css' rel='stylesheet' type='text/css' />\n")
+		file.write("\t</head>\n")
+		file.write("\t<body>\n")
+		file.write("\t\t<h1>Babysitter Payments</h1>\n")
+		file.write("\t\t<table>\n")
+		file.write('\t\t\t<thead>\n')
+		file.write("\t\t\t\t<tr>\n")
+		for num in range(len(header)):
+			file.write(f"\t\t\t\t\t<th>{header[num]}</th>\n")
+		file.write("\t\t\t\t</tr>\n")
+		file.write("\t\t\t</thead>\n")
+		file.write("\t\t\t<tbody>\n")
 		for line in nested_list:
-			file.write("<tr>")
+			file.write("\t\t\t\t<tr>\n")
 			a,b,c,d = line[0],line[1],line[2], int(line[1]) * float(line[2])
-			file.write("<center><td>{:15}</center></td>".format(a))
-			file.write('<center><td>{:10}</center></td>'.format(b))
-			file.write('<center><td>{:15}</center></td>'.format(c))
-			file.write("<center><td>{:10}</center></td>\n".format(d))
-			file.write("</tr>\n")
+			file.write(f"\t\t\t\t\t<td>{a}</td>\n")
+			file.write(f'\t\t\t\t\t<td>{b}</td>\n')
+			file.write(f'\t\t\t\t\t<td>{c}</td>\n')
+			file.write(f"\t\t\t\t\t<td>{d}</td>\n")
+			file.write("\t\t\t\t</tr>\n")
+		file.write("\t\t\t</tbody>\n")
+		file.write("\t\t</table>\n")
+		file.write("\t</body>\n")
+		file.write("</html>\n")
 	logger.debug("exited function - bs_data.html saved")
 
 def open_dat():
@@ -45,24 +55,17 @@ def open_dat():
 	the babysitter data
 	'''
 	
-	logger.debug("Entered open_dat()")
-	try:
-		with open('bs.csv','r') as file:
-			pass
-	except:
-		#if file does not exist will call main which creates the file
-		logger.exception("Error occured in with open bs.csv")
-		main()
-	else:
-		with open('bs.csv',"r") as file:
-			l=[]
+	logger.debug("Entered babysitters.py/open_dat()")
+	check_for_file('data/bs.csv')
+	with open('data/bs.csv',"r") as file:
+		l=[]
+		line=file.readline().strip()
+		while line:
+			line2=line.split(',')
+			l.append(line2)
 			line=file.readline().strip()
-			while line:
-				line2=line.split(',')
-				l.append(line2)
-				line=file.readline().strip()
-		logger.debug("Left open_dat()")
-		return l
+	logger.debug("Left open_dat()")
+	return l
 	
 def save_dat(list_in):
 	'''
@@ -73,7 +76,7 @@ def save_dat(list_in):
 	
 	logger.debug("entered save_dat")
 	#open file	
-	with open("bs.csv","w") as file:
+	with open("data/bs.csv","w") as file:
 		#iterate through the list and save each line of data
 		for line in list_in:
 			file.write(",".join(line))
@@ -85,7 +88,7 @@ def view_babysitter_table():
 	function prints the babysitter table to screen
 	'''
 	
-	logger.debug("entered view_babysitter_table()")
+	logger.debug("entered babysitter.py/view_babysitter_table()")
 	col_list = [
 				"Date",
 				"Number of Sitters",
@@ -93,54 +96,51 @@ def view_babysitter_table():
 				"Total Amount Paid"
 				]
 	table = open_dat()
-	print("{:15}{:10}{:15}{:15}".format("Date","# Sitters","Amt Paid Each","Total Paid" ))
+	for col_header in col_list:
+		print(f" {col_header:15} ", end='')
+	print('')
 	for line in table:
 		week_total = int(line[1]) * float(line[2])
-		print("{:15}{:10}{:15}{:10}".format(line[0],line[1],line[2],week_total))
+		print(f"{line[0]:15}{line[1]:15}{line[2]:15}{week_total:15}")
 	pause()
 	save_bs_html(table)
-	logger.debug("leaving function")
-		
-	
-		
-	
+	logger.debug("leaving babysitter.py/view_babysitter_table()")
+
 def enter_bs_data():
 	'''
 	gets user input of babysitter data and adds it to the table
 	'''
 	
-	#todo:
-	#	add for case for blank input
 	logger.debug("entered enter_bs_data()")
 	questions = [
 				"Enter date: ",
 				"Enter number of sitters: ",
 				"Enter amt paid to each sitter: "
 				]
-	date, num_sitters, aps = get_input(questions)
-	list_add = [date,num_sitters,aps]
+	list_add = []
+	#test for to make sure list_add has same length as questions
+	while len(list_add) < len(questions): list_add = get_input(questions)
+	#open data table
 	table = open_dat()
+	#debug log to show table data before add
 	logger.debug("table before add:")
-	for item in table: logger.debug(item)
+	for item in table: logger.debug(f'{item}')
 	table.append(list_add)
+	#and after add
 	logger.debug("table after add:")
-	for item in table: logger.debug(item)
+	for item in table: logger.debug(f'{item}')
+	#save changed table
 	save_dat(table)
 	pause()
 
 def main():
 	#determines if file exists and if not will create the file and test it
 	logger.debug('babysitters.py main running')
-	try:
-		with open("bs.csv",'r') as file:
-			file.readlines()
-		print("file read")
-		logger.debug("file read")
-	except:
-		logger.exception("file not read, setting up bs.csv")
-		print("Creating new file")
-		with open('bs.csv','w') as new:
-			new.write('01/01/1900,1,5,5')
+	check_for_file('data/bs.csv')
+	with open("data/bs.csv",'r') as file:
+		file.readlines()
+	print("file read")
+	logger.debug("file read")
 	run_test = input("should I run test? (Y/N) ")
 	ans = run_test[0].lower()
 	if ans == 'y':
@@ -150,4 +150,3 @@ def main():
 		
 if __name__ == "__main__":
 	main()
-logger.info('************  babysitters end  ************')
