@@ -111,10 +111,16 @@ def html_report(b,c,*args,**kwargs):
 		html_file.write('\t\t\t\t\t</thead>\n')
 		html_file.write('\t\t\t\t\t<tbody>\n')
 		for line in bs_data:
-			html_file.write("\t\t\t\t\t\t<tr>\n")
-			for item in line:
-				html_file.write(f"\t\t\t\t\t\t\t<td>{item:15}</td>\n")
-			html_file.write(f"\t\t\t\t\t\t\t<td>{int(line[1]) * float(line[2]):15}</td>\n")
+			try:
+				total = int(line[1]) * float(line[2])
+			except ValueError as err:
+				logger.warning(f'Value error: {err}')
+				continue
+			else:
+				html_file.write("\t\t\t\t\t\t<tr>\n")
+				for item in line:
+					html_file.write(f"\t\t\t\t\t\t\t<td>{item:15}</td>\n")
+					html_file.write(f"\t\t\t\t\t\t\t<td>{total:15}</td>\n")
 			html_file.write("\t\t\t\t\t\t</tr>\n")
 		html_file.write('\t\t\t\t\t</tbody>\n')
 		html_file.write("\t\t\t\t</table>")

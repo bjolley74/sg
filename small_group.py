@@ -1,10 +1,21 @@
-import webbrowser as wb
+import webbrowser
 import logging
 from os.path import exists
 from family import Family, get_fam_list, create_fam, correct_fam, remove_family
-from mylib import print_heading, clear, pause, check_for_file
+from mylib import print_heading, clear, pause, check_for_file,check_os
 from babysitters import view_babysitter_table, enter_bs_data
 from reports import html_report
+
+this_os = check_os()
+if this_os == 'windows':
+	chrome_path = 'C:/Program Files (x86)/Google/Chrome/Application/chrome.exe %s'
+elif this_os == 'mac':
+	chrome_path = 'open -a /Applications/Google\ Chrome.app %s'
+elif this_os == 'nix':
+	chrome_path = '/usr/bin/google-chrome %s'
+else:
+	chrome_path = None
+chrome = webbrowser.get(chrome_path)
 
 ##logger set up
 logger = logging.getLogger(__name__)
@@ -102,7 +113,7 @@ def fam_sub_menu(Fam):
 				open_page = input('Would you like to open page now (y/n)? ')
 				if open_page.lower() == 'y':
 					print('opening page......')
-					wb.open(Fam.html,new=2,autoraise=False)
+					chrome.open_new(Fam.html)
 			else:
 				print(f"{num} - invalid number entered")
 				pause()
@@ -201,7 +212,7 @@ def actions_menu():
 				print()
 				open_html = input("would you like to open the report (y/n)?")
 				if open_html.lower() == "y":
-					wb.open('full_report.html',new=2,autoraise = False)
+					chrome.open_new('reports/full_report.html')
 		else:
 			logger.error(f"{sel} is invalid choice")
 			continue

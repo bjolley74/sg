@@ -35,14 +35,19 @@ def save_bs_html(nested_list):
 		file.write("\t\t\t\t</tr>\n")
 		file.write("\t\t\t</thead>\n")
 		file.write("\t\t\t<tbody>\n")
+		row = 0
 		for line in nested_list:
-			file.write("\t\t\t\t<tr>\n")
-			a,b,c,d = line[0],line[1],line[2], int(line[1]) * float(line[2])
-			file.write(f"\t\t\t\t\t<td>{a}</td>\n")
-			file.write(f'\t\t\t\t\t<td>{b}</td>\n')
-			file.write(f'\t\t\t\t\t<td>{c}</td>\n')
-			file.write(f"\t\t\t\t\t<td>{d}</td>\n")
-			file.write("\t\t\t\t</tr>\n")
+			row += 1
+			if line[0] == '' or line[1] == line[2] == '':
+				logger.warning(f'Empty cells in row: {row}')
+			else:
+				file.write("\t\t\t\t<tr>\n")
+				a,b,c,d = line[0],line[1],line[2], int(line[1]) * float(line[2])
+				file.write(f"\t\t\t\t\t<td>{a}</td>\n")
+				file.write(f'\t\t\t\t\t<td>{b}</td>\n')
+				file.write(f'\t\t\t\t\t<td>{c}</td>\n')
+				file.write(f"\t\t\t\t\t<td>{d}</td>\n")
+				file.write("\t\t\t\t</tr>\n")
 		file.write("\t\t\t</tbody>\n")
 		file.write("\t\t</table>\n")
 		file.write("\t</body>\n")
@@ -99,9 +104,14 @@ def view_babysitter_table():
 	for col_header in col_list:
 		print(f" {col_header:15} ", end='')
 	print('')
+	row = 0
 	for line in table:
-		week_total = int(line[1]) * float(line[2])
-		print(f"{line[0]:15}{line[1]:15}{line[2]:15}{week_total:15}")
+		row += 1
+		if line[0] == '' or line [1] == '':
+			logger.warning(f'Empty cells in bs.csv in row: {row}')
+		else:
+			week_total = int(line[1]) * float(line[2])
+			print(f"{line[0]:15}{line[1]:15}{line[2]:15}{week_total:15}")
 	pause()
 	save_bs_html(table)
 	logger.debug("leaving babysitter.py/view_babysitter_table()")

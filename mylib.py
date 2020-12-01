@@ -1,4 +1,5 @@
 from os import system,name,listdir,path
+from sys import platform
 
 def files(cwd,ext):
 	'''
@@ -98,3 +99,11 @@ def check_for_file(filepath):
 	if not path.exists(filepath):
 		file = open(filepath, 'w')
 		file.close()
+
+def check_os():
+	if platform == "win32" or platform == 'cygwin':
+		return 'windows'
+	elif platform == 'darwin':
+		return 'mac'
+	else:
+		return 'nix'
