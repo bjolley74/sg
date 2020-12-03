@@ -1,11 +1,13 @@
 *.csv
-*.txt
 *.html
 *.pdf
-*.log
+logs/
 .vscode/
 __pycache__/
 *.ods
 item.md
 *.code-workspace
 *.json
+venv/
+families.txt
+removed_fams.txt
