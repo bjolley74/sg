@@ -1,5 +1,7 @@
 from pathlib import Path
 import logging
+import pandas as pd
+
 ##logger set up
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -9,6 +11,7 @@ file_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
 from datetime import datetime as dt
 from mylib import print_heading, pause, get_input, clear
+
 
 logger.info("family.py run as {}".format(__name__))
 class Family:
@@ -32,7 +35,14 @@ class Family:
 		self.filename = Path('data/'+ self.last + ".csv")
 		self.html = Path('reports/' + self.last + ".html")
 		self.table = self.open_csv()
+		self.df = pd.DataFrame(self.table)
 	
+	def __str__(self):
+		return self.df
+
+	def __repr__(self):
+		return f'{self.last} Family Object'
+
 	@property
 	def money_in(self):
 		logger.debug("entered Family.money_in")
@@ -384,6 +394,7 @@ def main(*args,**kwargs):
 			fam.email_html()
 			#fam.update_table()
 			fam.print_table()
+			print(fam.df)
 		else:
 			print(name)
 	#create_fam()
