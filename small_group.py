@@ -10,7 +10,7 @@ this_os = check_os()
 if this_os == 'windows':
 	chrome_path = 'C:/Program Files (x86)/Google/Chrome/Application/chrome.exe %s'
 elif this_os == 'mac':
-	chrome_path = 'open -a /Applications/Google\ Chrome.app %s'
+	chrome_path = 'open -a /Applications/Google/Chrome.app %s'
 elif this_os == 'nix':
 	chrome_path = '/usr/bin/google-chrome %s'
 else:
